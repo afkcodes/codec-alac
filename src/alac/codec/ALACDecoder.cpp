@@ -98,15 +98,18 @@ int32_t ALACDecoder::Init( void * inMagicCookie, uint32_t inMagicCookieSize )
     // ALACSpecificConfig. 
     // See ALACMagicCookieDescription.txt for additional documentation concerning the 'magic cookie'
     
+    // an ALAC cookie is at least an ALACSpecificConfig; anything shorter cannot be read (and the atom checks below read 8 bytes)
+    RequireAction( (inMagicCookie != nil) && (inMagicCookieSize >= sizeof(ALACSpecificConfig)), return kALAC_ParamError; );
+
     // skip format ('frma') atom if present
-    if (theActualCookie[4] == 'f' && theActualCookie[5] == 'r' && theActualCookie[6] == 'm' && theActualCookie[7] == 'a')
+    if (theCookieBytesRemaining >= 12 && theActualCookie[4] == 'f' && theActualCookie[5] == 'r' && theActualCookie[6] == 'm' && theActualCookie[7] == 'a')
     {
         theActualCookie += 12;
         theCookieBytesRemaining -= 12;
     }
     
     // skip 'alac' atom header if present
-    if (theActualCookie[4] == 'a' && theActualCookie[5] == 'l' && theActualCookie[6] == 'a' && theActualCookie[7] == 'c')
+    if (theCookieBytesRemaining >= 12 && theActualCookie[4] == 'a' && theActualCookie[5] == 'l' && theActualCookie[6] == 'a' && theActualCookie[7] == 'c')
     {
         theActualCookie += 12;
         theCookieBytesRemaining -= 12;
@@ -130,6 +133,10 @@ int32_t ALACDecoder::Init( void * inMagicCookie, uint32_t inMagicCookieSize )
         mConfig = theConfig;
         
         RequireAction( mConfig.compatibleVersion <= kALACVersion, return kALAC_ParamError; );
+
+        // the buffers below are frameLength samples long; a packet is at most 16384 sample frames (ReadMe.txt)
+        RequireAction( (mConfig.frameLength > 0) && (mConfig.frameLength <= 16384), return kALAC_ParamError; );
+        RequireAction( (mConfig.numChannels > 0) && (mConfig.numChannels <= kALACMaxChannels), return kALAC_ParamError; );
 
         // allocate mix buffers
         mMixBufferU = (int32_t *) calloc( mConfig.frameLength * sizeof(int32_t), 1 );
