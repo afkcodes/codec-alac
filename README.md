@@ -33,6 +33,14 @@ git clone https://github.com/pschatzmann/codec-alac.git
 This project can also be built (e.g. on your desktop) with cmake:
 
 
+## Android
+
+The library builds with the Android NDK's CMake toolchain file. For playback you
+can build the decoder only (`-DALAC_BUILD_ENCODER=OFF`), as a shared or static
+library, and shared builds are 16 KB page aligned. See
+[docs/ANDROID.md](docs/ANDROID.md) for the build commands, Gradle setup, a JNI
+example and the safety notes.
+
 ## Important Usage Notes
 
 **The original ALAC API is complex and poorly documented.** After struggling with the direct implementation, I strongly recommend using the simplified wrapper in the [Arduino Audio Tools](https://github.com/pschatzmann/arduino-audio-tools) library instead of using this library directly.
