@@ -35,7 +35,6 @@
 #include "EndianPortable.h"
 
 // constants/data
-const uint32_t kMaxBitDepth = 32;			// max allowed bit depth is 32
 
 
 // prototypes
@@ -193,7 +192,6 @@ int32_t ALACDecoder::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32_t 
 	uint32_t			denShiftU, denShiftV;
 	uint16_t			pbFactorU, pbFactorV;
 	uint16_t			pb;
-	int16_t *			samples;
 	int16_t *			out16;
 	uint8_t *			out20;
 	uint8_t *			out24;
@@ -211,7 +209,6 @@ int32_t ALACDecoder::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32_t 
 	mActiveElements = 0;
 	channelIndex	= 0;
 	
-	samples = (int16_t *) sampleBuffer;
 
 	status = ALAC_noErr;
 	*outNumSamples = numSamples;
@@ -667,12 +664,11 @@ int32_t ALACDecoder::FillElement( BitBuffer * bits )
 */
 int32_t ALACDecoder::DataStreamElement( BitBuffer * bits )
 {
-	uint8_t		element_instance_tag;
 	int32_t		data_byte_align_flag;
 	uint16_t		count;
 	
 	// the tag associates this data stream element with a given audio element
-	element_instance_tag = BitBufferReadSmall( bits, 4 );
+	(void) BitBufferReadSmall( bits, 4 );	// element instance tag, not used
 	
 	data_byte_align_flag = BitBufferReadOne( bits );
 

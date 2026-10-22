@@ -98,7 +98,7 @@ static inline int32_t ALWAYS_INLINE abs_func( int32_t a )
 	return result;	
 }
 
-static inline uint32_t ALWAYS_INLINE read32bit( uint8_t * buffer )
+__attribute__((unused)) static inline uint32_t ALWAYS_INLINE read32bit( uint8_t * buffer )
 {
 	// embedded CPUs typically can't read unaligned 32-bit words so just read the bytes
 	uint32_t		value;
